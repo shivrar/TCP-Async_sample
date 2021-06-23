@@ -18,7 +18,7 @@ int main() {
 	local_addr_.sin_family = AF_INET;
 	local_addr_.sin_port = htons(2020);
 	local_addr_.sin_addr.s_addr = htonl(INADDR_ANY);
-	guard(bind(tcp_socket_fd, (struct sockaddr *) &local_addr_, sizeof(local_addr_)), "could not bind");
+	//guard(bind(tcp_socket_fd, (struct sockaddr *) &local_addr_, sizeof(local_addr_)), "could not bind");
 
 	server_addr_.sin_family = AF_INET;
 	server_addr_.sin_port = htons(8080);
@@ -36,12 +36,12 @@ int main() {
 	while(1){
 		printf("Writing 'hello' then sleeping for 10 seconds.\n");
 		char msg[] = "hello\n";
-		if(send(server_fd_, msg, sizeof(msg), MSG_NOSIGNAL) < 0){
+		if(send(tcp_socket_fd, msg, sizeof(msg), MSG_NOSIGNAL) < 0){
 			printf("Destination was closed, exiting loop. \n");
-			break;
+			//break;
 		}
 		sleep(10);
-	}
 
+	}
 	return EXIT_SUCCESS;
 }

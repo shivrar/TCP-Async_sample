@@ -20,7 +20,7 @@ int main() {
 	int tcp_socket = guard(socket(AF_INET, SOCK_STREAM|SOCK_NONBLOCK, 0), "could not create TCP listening socket (Non-blocking)");
 	int yes = 1;
 	if (setsockopt(tcp_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) {
-	printf("Unable to set socket to reusable. \n");
+		printf("Unable to set socket to reusable. \n");
 	}
 	struct sockaddr_in tcp_addr_, cli_addr_;
 	tcp_addr_.sin_family = AF_INET;
@@ -40,41 +40,44 @@ int main() {
 	}
 	printf("Connection made with %s : %u. \n", inet_ntoa(cli_addr_.sin_addr), ntohs(cli_addr_.sin_port));
 	// start the loop to receive data, asynchronously
-	while(1){ // think bascally what is happening on the retreive data/ spin cycle
-    printf("Beginning of main thread. \n");
+
+	while(1){ 
+		// think bascally what is happening on the retreive data/ spin cycle
+		printf("Beginning of main thread. \n");
 		if(data_ready_.valid() && data_ready_.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
 		{
 			printf("Threaded success. \n");
-      std::string result = data_ready_.get();
-      printf("\033[32;1m %s \033[0m\n", result.c_str());
-      send(client_fd_, (">"+result).c_str(), result.size()+1, 0);
-      trig_started = false;
+			std::string result = data_ready_.get();
+			printf("\033[32;1m %s \033[0m\n", result.c_str());
+			if(send(client_fd_, (">"+result).c_str(), result.size()+1, MSG_NOSIGNAL) == -1)
+				printf("Unable to send data. \n");
+			trig_started = false;
 		}else if (!trig_started){
 			printf("Triggering a check for data. \n");
 			//Trigger a check for data received
 			data_ready_ = std::async(std::launch::async, [&]()->std::string{
 			//check and do time out stuff here etc
 			trig_started = true;
-      std::string res;
+			std::string res;
 			char buffer[2048];
 			//sleep(10);
 			uint16_t rec_count = 0;
 			while (1){
-        printf("Before recv \n");
+				printf("Before recv \n");
 		 		rec_count = recv(client_fd_, buffer, sizeof(buffer), 0);
-        printf("After recv \n");
+				printf("After recv \n");
 		 		if(rec_count > 1){
-          res=std::string(buffer, buffer+rec_count);
+	  				res=std::string(buffer, buffer+rec_count);
 		 			break;
 		 		} else if(rec_count == 0){
-          printf("Connection closed: returning nothing\n");
-          break;
-        }
+	  				printf("Connection closed: returning nothing\n");
+	  				break;
+				}
 		 	}
 			return res;
 			});
 		}
-    sleep(1);
+		sleep(1);
 	}
   return EXIT_SUCCESS;
 }
