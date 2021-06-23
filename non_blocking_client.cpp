@@ -34,13 +34,13 @@ int main() {
 	// Lets send some data on a loop
 	
 	while(1){
-		printf("Writing 'hello' then sleeping for 10 seconds.\n");
+		printf("Writing 'hello' then sleeping for 2 seconds.\n");
 		char msg[] = "hello\n";
 		if(send(tcp_socket_fd, msg, sizeof(msg), MSG_NOSIGNAL) < 0){
 			printf("Destination was closed, exiting loop. \n");
 			//break;
 		}
-		sleep(10);
+		sleep(2);
 
 	}
 	return EXIT_SUCCESS;

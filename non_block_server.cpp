@@ -43,14 +43,14 @@ int main() {
 
 	while(1){ 
 		// think bascally what is happening on the retreive data/ spin cycle
-		printf("Beginning of main thread. \n");
+		//printf("Beginning of main thread. \n");
 		if(data_ready_.valid() && data_ready_.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
 		{
 			printf("Threaded success. \n");
 			std::string result = data_ready_.get();
 			printf("\033[32;1m %s \033[0m\n", result.c_str());
 			if(send(client_fd_, (">"+result).c_str(), result.size()+1, MSG_NOSIGNAL) == -1)
-				printf("Unable to send data. \n");
+				printf("\050[50;1m Unable to send data.\050[0m\n");
 			trig_started = false;
 		}else if (!trig_started){
 			printf("Triggering a check for data. \n");
