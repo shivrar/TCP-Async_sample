@@ -17,6 +17,8 @@ find_package(Threads REQUIRED)
 
 add_executable(client.o non_blocking_client.cpp)
 add_executable(server.o non_block_server.cpp)
+add_executable(monitor.o connection_monitor.cpp)
 
 target_link_libraries(client.o ${catkin_LIBRARIES} Threads::Threads)
 target_link_libraries(server.o ${catkin_LIBRARIES} Threads::Threads)
+target_link_libraries(monitor.o ${catkin_LIBRARIES} Threads::Threads)

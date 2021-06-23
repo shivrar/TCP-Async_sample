@@ -50,7 +50,7 @@ int main() {
 			std::string result = data_ready_.get();
 			printf("\033[32;1m %s \033[0m\n", result.c_str());
 			if(send(client_fd_, (">"+result).c_str(), result.size()+1, MSG_NOSIGNAL) == -1)
-				printf("\050[50;1m Unable to send data.\050[0m\n");
+				printf("\033[30;1m Unable to send data.\033[0m\n");
 			trig_started = false;
 		}else if (!trig_started){
 			printf("Triggering a check for data. \n");
@@ -71,7 +71,7 @@ int main() {
 		 			break;
 		 		} else if(rec_count == 0){
 	  				printf("Connection closed: returning nothing\n");
-	  				break;
+	  				exit(-1);
 				}
 		 	}
 			return res;
